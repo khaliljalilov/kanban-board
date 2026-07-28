@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Tapşırıq Lövhəsi</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <header>
+        <nav class="kanban__nav">
+            <div class="nav__logo">K</div>
+            <h1 class="nav__header">Kanban İdarəetmə</h1>
+            <input type="text" class="nav__searching" placeholder="Axtar...">
+            <div class="filter__wrap">
+                <span class="dot dot--all" id="filter-dot"></span>
+                <select name="priority" id="nav_selector" class="nav__selector">
+                    <option value="all">Bütün tapşırıqlar</option>
+                    <option value="low">Aşağı</option>
+                    <option value="medium">Orta</option>
+                    <option value="high">Çətin</option>
+                </select>
+            </div>
+            <button class="new__task" id="new-task">+ Yeni Tapşırıq</button>
+        </nav>
+    </header>
+
+    <main id="board">
+        <div class="board__grid">
+
+            <!-- Gözləyir sütunu -->
+            <section class="board__column" id="col-todo">
+                <div class="board__column-header">
+                    <div class="board__column-title">
+                        <span class="board__dot board__dot--todo"></span>
+                        <h2>Gözləyir</h2>
+                    </div>
+                    <span class="board__count" id="count-todo">0</span>
+                </div>
+                <div class="board__cards" id="cards-todo"></div>
+            </section>
+
+            <!-- İcra edilir sütunu -->
+            <section class="board__column" id="col-inprogress">
+                <div class="board__column-header">
+                    <div class="board__column-title">
+                        <span class="board__dot board__dot--inprogress"></span>
+                        <h2>İcra edilir</h2>
+                    </div>
+                    <span class="board__count" id="count-inprogress">0</span>
+                </div>
+                <div class="board__cards" id="cards-inprogress"></div>
+            </section>
+
+            <!-- Tamamlandı sütunu -->
+            <section class="board__column" id="col-done">
+                <div class="board__column-header">
+                    <div class="board__column-title">
+                        <span class="board__dot board__dot--done"></span>
+                        <h2>Tamamlandı</h2>
+                    </div>
+                    <span class="board__count" id="count-done">0</span>
+                </div>
+                <div class="board__cards" id="cards-done"></div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="./script.js"></script>
+</body>
+
+</html>
