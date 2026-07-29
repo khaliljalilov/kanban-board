@@ -57,6 +57,4 @@ kanban-board/
 └── script.js      # Bütün JS funksionallığı
 ```
 
-> Ekran görüntüsü əlavə etmək üçün `screenshot.png` faylını repo-ya yüklə və aşağıdakı sətri yenilə:
-
-![Kanban Lövhəsi](screenshot.png)
+---
