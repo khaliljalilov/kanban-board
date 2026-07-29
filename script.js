@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initDragAndDrop();
   document
     .querySelector(".nav__searching")
-    .addEventListener("input", renderBoard); 
+    .addEventListener("input", renderBoard);
 });
 
 // Filter dot
@@ -187,6 +187,14 @@ document.getElementById("modal-save").addEventListener("click", function () {
   const column = document.getElementById("task-column").value;
 
   if (!title) return;
+  // Təkrarlanan tapşırıq yoxlaması ← bura
+  const duplicate = tasks.some(
+    (t) => t.title.toLowerCase() === title.toLowerCase() && t.id !== editingId,
+  );
+  if (duplicate) {
+    alert("Bu adda tapşırıq artıq mövcuddur!");
+    return;
+  }
 
   if (editingId !== null) {
     const task = tasks.find((t) => t.id === editingId);
@@ -224,4 +232,3 @@ document.getElementById("board").addEventListener("click", function (e) {
     openModal();
   }
 });
-
