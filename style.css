@@ -440,6 +440,17 @@ header {
     background: var(--bg);
 }
 
+.card.is-dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+}
+
+.board__cards.drag-over {
+    background: rgba(79, 70, 229, 0.05);
+    border: 2px dashed var(--primary);
+    border-radius: 10px;
+}
+
 
 /* ========================
    Responsiv

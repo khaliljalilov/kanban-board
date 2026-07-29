@@ -19,6 +19,7 @@ function createCard(task) {
   const card = document.createElement("article");
   card.className = "card";
   card.dataset.id = task.id;
+  card.setAttribute('draggable', true);
 
   const title = document.createElement("p");
   title.className = "card__title";
@@ -160,4 +161,52 @@ document.getElementById("modal-save").addEventListener("click", function () {
 
     document.getElementById("modal").classList.remove("is-open");
     renderBoard();
+});
+
+
+// Drag and Drop
+let draggedId = null;
+
+function initDragAndDrop() {
+    document.getElementById('board').addEventListener('dragstart', function(e) {
+        const card = e.target.closest('.card');
+        if (!card) return;
+        draggedId = Number(card.dataset.id);
+        card.classList.add('is-dragging');
+    });
+
+    document.getElementById('board').addEventListener('dragend', function(e) {
+        const card = e.target.closest('.card');
+        if (!card) return;
+        card.classList.remove('is-dragging');
+    });
+
+    document.querySelectorAll('.board__cards').forEach(col => {
+        col.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drag-over');
+        });
+
+        col.addEventListener('dragleave', function() {
+            this.classList.remove('drag-over');
+        });
+
+        col.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            const newColumn = this.id.replace('cards-', '');
+            const task = tasks.find(t => t.id === draggedId);
+            if (task) {
+                task.column = newColumn;
+                renderBoard();
+            }
+            draggedId = null;
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderBoard();
+    initDragAndDrop();
+    initCustomSelect();
 });
