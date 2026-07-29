@@ -68,6 +68,48 @@
 
         </div>
     </main>
+    <div class="modal" id="modal">
+    <div class="modal__box">
+
+        <div class="modal__header">
+            <h2 class="modal__title">Yeni Tapşırıq</h2>
+            <button class="modal__close" id="modal-close">✕</button>
+        </div>
+
+        <div class="modal__body">
+            <div class="form__group">
+                <label for="task-title">Başlıq</label>
+                <input type="text" id="task-title" placeholder="Tapşırığın adı...">
+            </div>
+
+            <div class="form__group">
+                <label for="task-priority">Prioritet</label>
+                <select id="task-priority">
+                    <option value="low">Aşağı</option>
+                    <option value="medium">Orta</option>
+                    <option value="high">Çətin</option>
+                </select>
+            </div>
+
+            <div class="form__group">
+                <label for="task-column">Sütun</label>
+                <select id="task-column">
+                    <option value="todo">Gözləyir</option>
+                    <option value="inprogress">İcra edilir</option>
+                    <option value="done">Tamamlandı</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <button class="btn__cancel" id="modal-cancel">Ləğv et</button>
+            <button class="new__task" id="modal-save">Saxla</button>
+        </div>
+
+    </div>
+</div>
+
+  
 
     <script src="./script.js"></script>
 </body>
