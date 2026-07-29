@@ -1,172 +1,101 @@
-document.getElementById("nav_selector").addEventListener("change", function () {
-  document.getElementById("filter-dot").className = `dot dot--${this.value}`;
-});
+'use strict';
 
-let tasks = [
-  { id: 1, title: "Layihə strukturunu qur", priority: "high", column: "todo" },
-  { id: 2, title: "HTML skeletini yaz", priority: "high", column: "todo" },
-  {
-    id: 3,
-    title: "CSS stilləri əlavə et",
-    priority: "medium",
-    column: "inprogress",
-  },
-  { id: 4, title: "JS ilə render et", priority: "high", column: "inprogress" },
-  { id: 5, title: "README yaz", priority: "low", column: "done" },
-];
+// ========================
+// State
+// ========================
+let tasks = [];
+let editingId = null;
+let draggedId = null;
 
+// ========================
+// localStorage
+// ========================
+function saveToStorage() {
+    localStorage.setItem('kanban-tasks', JSON.stringify(tasks));
+}
+
+function loadFromStorage() {
+    const saved = localStorage.getItem('kanban-tasks');
+    if (saved) tasks = JSON.parse(saved);
+}
+
+// ========================
+// Render
+// ========================
 function createCard(task) {
-  const card = document.createElement("article");
-  card.className = "card";
-  card.dataset.id = task.id;
-  card.setAttribute('draggable', true);
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.dataset.id = task.id;
+    card.setAttribute('draggable', true);
 
-  const title = document.createElement("p");
-  title.className = "card__title";
-  title.textContent = task.title;
+    const title = document.createElement('p');
+    title.className = 'card__title';
+    title.textContent = task.title;
 
-  const badge = document.createElement("span");
-  badge.className = `card__priority card__priority--${task.priority}`;
-  badge.textContent =
-    task.priority === "high"
-      ? "Çətin"
-      : task.priority === "medium"
-        ? "Orta"
-        : "Aşağı";
+    const badge = document.createElement('span');
+    badge.className = `card__priority card__priority--${task.priority}`;
+    badge.textContent = task.priority === 'high' ? 'Çətin' :
+                        task.priority === 'medium' ? 'Orta' : 'Aşağı';
 
-  // Düymələr
-  const actions = document.createElement("div");
-  actions.className = "card__actions";
+    const actions = document.createElement('div');
+    actions.className = 'card__actions';
 
-  const editBtn = document.createElement("button");
-  editBtn.className = "card__btn card__btn--edit";
-  editBtn.textContent = "✏️";
-  editBtn.dataset.id = task.id;
+    const editBtn = document.createElement('button');
+    editBtn.className = 'card__btn card__btn--edit';
+    editBtn.textContent = '✏️';
+    editBtn.dataset.id = task.id;
 
-  const deleteBtn = document.createElement("button");
-  deleteBtn.className = "card__btn card__btn--delete";
-  deleteBtn.textContent = "🗑️";
-  deleteBtn.dataset.id = task.id;
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'card__btn card__btn--delete';
+    deleteBtn.textContent = '🗑️';
+    deleteBtn.dataset.id = task.id;
 
-  actions.appendChild(editBtn);
-  actions.appendChild(deleteBtn);
+    actions.appendChild(editBtn);
+    actions.appendChild(deleteBtn);
+    card.appendChild(title);
+    card.appendChild(badge);
+    card.appendChild(actions);
 
-  card.appendChild(title);
-  card.appendChild(badge);
-  card.appendChild(actions);
-
-  return card;
+    return card;
 }
 
 function renderBoard() {
-  const columns = ["todo", "inprogress", "done"];
+    const columns = ['todo', 'inprogress', 'done'];
 
-  // Əvvəlcə hər sütunu təmizlə
-  columns.forEach((col) => {
-    document.getElementById(`cards-${col}`).innerHTML = "";
-  });
+    columns.forEach(col => {
+        document.getElementById(`cards-${col}`).innerHTML = '';
+    });
 
-  tasks.forEach((task) => {
-    const container = document.getElementById(`cards-${task.column}`);
-    if (!container) return;
-    container.appendChild(createCard(task));
-  });
+    tasks.forEach(task => {
+        const container = document.getElementById(`cards-${task.column}`);
+        if (!container) return;
+        container.appendChild(createCard(task));
+    });
 
-  columns.forEach((col) => {
-    const count = tasks.filter((t) => t.column === col).length;
-    document.getElementById(`count-${col}`).textContent = count;
-  });
+    columns.forEach(col => {
+        const count = tasks.filter(t => t.column === col).length;
+        document.getElementById(`count-${col}`).textContent = count;
+    });
+
+    saveToStorage();
 }
 
-document.addEventListener("DOMContentLoaded", renderBoard);
+// ========================
+// Modal
+// ========================
+function openModal() {
+    document.getElementById('modal').classList.add('is-open');
+}
 
-document.getElementById("new-task").addEventListener("click", function () {
-  document.getElementById("modal").classList.add("is-open");
-});
+function closeModal() {
+    document.getElementById('modal').classList.remove('is-open');
+    document.getElementById('task-title').value = '';
+    editingId = null;
+}
 
-document.getElementById("modal-close").addEventListener("click", function () {
-  document.getElementById("modal").classList.remove("is-open");
-});
-
-document.getElementById("modal-cancel").addEventListener("click", function () {
-  document.getElementById("modal").classList.remove("is-open");
-});
-document.getElementById("modal").addEventListener("click", function (e) {
-  if (e.target === this) {
-    this.classList.remove("is-open");
-  }
-});
-
-document.getElementById("modal-save").addEventListener("click", function () {
-  const title = document.getElementById("task-title").value;
-  const priority = document.getElementById("task-priority").value;
-  const column = document.getElementById("task-column").value;
-
-  tasks.push({
-    id: tasks[tasks.length - 1].id + 1,
-    title: title,
-    priority: priority,
-    column: column,
-  });
-
-  document.getElementById("modal").classList.remove("is-open");
-  renderBoard();
-});
-
-document.getElementById("board").addEventListener("click", function (e) {
-  if (e.target.classList.contains("card__btn--delete")) {
-    const id = e.target.dataset.id;
-    tasks = tasks.filter((t) => t.id !== Number(id));
-    renderBoard();
-  }
-});
-let editingId = null;
-document.getElementById("board").addEventListener("click", function (e) {
-  if (e.target.classList.contains("card__btn--edit")) {
-    const id = e.target.dataset.id;
-    const task = tasks.find((u) => u.id === Number(id));
-
-    // modalın inputlarını doldur
-    document.getElementById("task-title").value = task.title;
-    document.getElementById("task-priority").value = task.priority;
-    document.getElementById("task-column").value = task.column;
-
-    editingId = Number(id);
-    document.getElementById("modal").classList.add("is-open");
-  }
-});
-
-
-document.getElementById("modal-save").addEventListener("click", function () {
-    const title = document.getElementById("task-title").value;
-    const priority = document.getElementById("task-priority").value;
-    const column = document.getElementById("task-column").value;
-
-    if (editingId !== null) {
-        // Redaktə rejimi — tapıb yenilə
-        const task = tasks.find(t => t.id === editingId);
-        task.title = title;
-        task.priority = priority;
-        task.column = column;
-        editingId = null; // sıfırla
-    } else {
-        // Yeni tapşırıq
-        tasks.push({
-            id: tasks[tasks.length - 1].id + 1,
-            title: title,
-            priority: priority,
-            column: column,
-        });
-    }
-
-    document.getElementById("modal").classList.remove("is-open");
-    renderBoard();
-});
-
-
+// ========================
 // Drag and Drop
-let draggedId = null;
-
+// ========================
 function initDragAndDrop() {
     document.getElementById('board').addEventListener('dragstart', function(e) {
         const card = e.target.closest('.card');
@@ -205,8 +134,69 @@ function initDragAndDrop() {
     });
 }
 
+// ========================
+// Event Listeners
+// ========================
 document.addEventListener('DOMContentLoaded', () => {
+    loadFromStorage();
     renderBoard();
     initDragAndDrop();
-    initCustomSelect();
+});
+
+// Filter dot
+document.getElementById('nav_selector').addEventListener('change', function() {
+    document.getElementById('filter-dot').className = `dot dot--${this.value}`;
+});
+
+// Modal aç/bağla
+document.getElementById('new-task').addEventListener('click', openModal);
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// Saxla
+document.getElementById('modal-save').addEventListener('click', function() {
+    const title = document.getElementById('task-title').value.trim();
+    const priority = document.getElementById('task-priority').value;
+    const column = document.getElementById('task-column').value;
+
+    if (!title) return;
+
+    if (editingId !== null) {
+        const task = tasks.find(t => t.id === editingId);
+        task.title = title;
+        task.priority = priority;
+        task.column = column;
+    } else {
+        tasks.push({
+            id: tasks.length ? tasks[tasks.length - 1].id + 1 : 1,
+            title,
+            priority,
+            column,
+        });
+    }
+
+    closeModal();
+    renderBoard();
+});
+
+// Sil / Redaktə et
+document.getElementById('board').addEventListener('click', function(e) {
+    const id = Number(e.target.dataset.id);
+
+    if (e.target.classList.contains('card__btn--delete')) {
+        tasks = tasks.filter(t => t.id !== id);
+        renderBoard();
+    }
+
+    if (e.target.classList.contains('card__btn--edit')) {
+        const task = tasks.find(t => t.id === id);
+        document.getElementById('task-title').value = task.title;
+        document.getElementById('task-priority').value = task.priority;
+        document.getElementById('task-column').value = task.column;
+        editingId = id;
+        openModal();
+    }
 });
